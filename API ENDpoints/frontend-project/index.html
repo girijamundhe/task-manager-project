@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Task Manager</title>
+
+    <style>
+
+        body{
+            font-family: Arial;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        h1{
+            color: blue;
+        }
+
+        #tasks{
+            margin-top: 20px;
+        }
+
+        p{
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+
+        button{
+            padding: 10px;
+            background-color: blue;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        input, select{
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <h1>Task Manager</h1>
+
+    <select id="filter" onchange="filterTasks()">
+
+        <option value="all">All Tasks</option>
+        <option value="completed">Completed</option>
+        <option value="pending">Pending</option>
+
+    </select>
+
+    <button onclick="sortTasks()">Sort Tasks</button>
+
+    <div id="tasks"></div>
+
+    <script>
+
+        let allTasks = [];
+
+        async function getTasks(){
+
+            let response = await fetch('https://jsonplaceholder.typicode.com/todos?_limit=10');
+
+            let data = await response.json();
+
+            allTasks = data;
+
+            displayTasks(allTasks);
+        }
+
+        function displayTasks(tasks){
+
+            let tasksDiv = document.getElementById("tasks");
+
+            tasksDiv.innerHTML = "";
+
+            tasks.forEach(task => {
+
+                let p = document.createElement("p");
+
+                p.innerText = task.title + " - " + (task.completed ? "Completed" : "Pending");
+
+                tasksDiv.appendChild(p);
+
+            });
+
+        }
+
+        function filterTasks(){
+
+            let filter = document.getElementById("filter").value;
+
+            if(filter === "completed"){
+
+                let completedTasks = allTasks.filter(task => task.completed);
+
+                displayTasks(completedTasks);
+
+            }
+
+            else if(filter === "pending"){
+
+                let pendingTasks = allTasks.filter(task => !task.completed);
+
+                displayTasks(pendingTasks);
+
+            }
+
+            else{
+
+                displayTasks(allTasks);
+
+            }
+
+        }
+
+        function sortTasks(){
+
+            let sortedTasks = [...allTasks].sort((a,b) => a.title.localeCompare(b.title));
+
+            displayTasks(sortedTasks);
+
+        }
+
+        getTasks();
+
+    </script>
+
+</body>
+
+</html>
